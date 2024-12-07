@@ -27,7 +27,7 @@ const UserScreen = () => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Cabecera */}
+        {}
         <View style={styles.header}>
           <Image
             source={require("../assets/contie2024F1.png")}
@@ -35,12 +35,12 @@ const UserScreen = () => {
           />
         </View>
 
-        {/* Spinner de carga */}
+        {}
         {loading ? (
           <ActivityIndicator size="large" color="#4A90E2" style={{ marginTop: 20 }} />
         ) : (
           <View style={styles.cardsContainer}>
-            {/* Renderizado condicional si 'users' es un array */}
+            {}
             { users.length > 0 ? (
               users.map((user) => (
                 <View key={user.id} style={styles.card}>
@@ -61,7 +61,7 @@ const UserScreen = () => {
         )}
       </ScrollView>
 
-      {/* Footer */}
+      {}
       <View style={styles.footer}>
         <TouchableOpacity
           style={styles.footerButton}
