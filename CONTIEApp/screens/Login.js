@@ -8,13 +8,13 @@ import {
   Image 
 } from "react-native";
 
-const LoginScreen = ({ navigation }) => { // Recibe `navigation` como prop
+const LoginScreen = ({ navigation }) => { 
   return (
     <View style={styles.container}>
-      {/* Imagen arriba del formulario */}
+      {}
       <Image source={require("../assets/contie2024F1.png")} style={styles.logo} />
 
-      {/* Tarjeta de inicio de sesión */}
+      {}
       <View style={styles.loginBox}>
         <Text style={styles.title}>Bienvenido de vuelta!</Text>
         <Text style={styles.subtitle}>Accede a tu panel de administrador.</Text>
@@ -31,10 +31,10 @@ const LoginScreen = ({ navigation }) => { // Recibe `navigation` como prop
           secureTextEntry
         />
 
-        {/* Botón Acceder */}
+        {}
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate("Home")} // Redirige a Home
+          onPress={() => navigation.navigate("Home")} 
         >
           <Text style={styles.buttonText}>Acceder</Text>
         </TouchableOpacity>
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     width: 200, 
     height: 80,
     resizeMode: "contain",
-    marginBottom: 20, // Espacio entre el logo y el formulario
+    marginBottom: 20, 
   },
   loginBox: {
     backgroundColor: "#fff",

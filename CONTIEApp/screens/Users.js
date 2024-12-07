@@ -1,15 +1,33 @@
-import React from "react";
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from "react-native";
-import { Ionicons } from '@expo/vector-icons'; // Usando iconos de Ionicons para el avatar
-import { useNavigation } from "@react-navigation/native"; // Importamos el hook de navegación
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from "@react-navigation/native";
+import { getUsers } from "../services/api.services";
 
 const UserScreen = () => {
-  const navigation = useNavigation(); // Usamos el hook para obtener la función de navegación
+  const navigation = useNavigation();
+  const [users, setUsers] = useState([]); 
+  const [loading, setLoading] = useState(true); 
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await getUsers();
+        setUsers(response.data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
 
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Cabecera con color y sombra */}
+        {/* Cabecera */}
         <View style={styles.header}>
           <Image
             source={require("../assets/contie2024F1.png")}
@@ -17,60 +35,49 @@ const UserScreen = () => {
           />
         </View>
 
-        {/* Contenido con tarjetas de usuarios */}
-        <View style={styles.cardsContainer}>
-          <View style={styles.card}>
-            <View style={styles.avatarContainer}>
-              <Ionicons name="person-circle" size={50} color="#4A90E2" />
-            </View>
-            <View style={styles.cardContent}>
-              <Text style={styles.cardName}>Juan Pérez</Text>
-              <Text style={styles.cardEmail}>juan.perez@example.com</Text>
-              <Text style={styles.cardRole}>Rol: Administrador</Text>
-            </View>
+        {/* Spinner de carga */}
+        {loading ? (
+          <ActivityIndicator size="large" color="#4A90E2" style={{ marginTop: 20 }} />
+        ) : (
+          <View style={styles.cardsContainer}>
+            {/* Renderizado condicional si 'users' es un array */}
+            { users.length > 0 ? (
+              users.map((user) => (
+                <View key={user.id} style={styles.card}>
+                  <View style={styles.avatarContainer}>
+                    <Ionicons name="person-circle" size={50} color="#4A90E2" />
+                  </View>
+                  <View style={styles.cardContent}>
+                    <Text style={styles.cardName}>{user.name} {user.lastname}</Text>
+                    <Text style={styles.cardEmail}>{user.email}</Text>
+                    <Text style={styles.cardRole}>Rol: {user.role}</Text>
+                  </View>
+                </View>
+              ))
+            ) : (
+              <Text style={styles.noUsersText}>No hay usuarios disponibles.</Text>
+            )}
           </View>
-
-          <View style={styles.card}>
-            <View style={styles.avatarContainer}>
-              <Ionicons name="person-circle" size={50} color="#4A90E2" />
-            </View>
-            <View style={styles.cardContent}>
-              <Text style={styles.cardName}>María López</Text>
-              <Text style={styles.cardEmail}>maria.lopez@example.com</Text>
-              <Text style={styles.cardRole}>Rol: Usuario</Text>
-            </View>
-          </View>
-
-          <View style={styles.card}>
-            <View style={styles.avatarContainer}>
-              <Ionicons name="person-circle" size={50} color="#4A90E2" />
-            </View>
-            <View style={styles.cardContent}>
-              <Text style={styles.cardName}>Carlos Martínez</Text>
-              <Text style={styles.cardEmail}>carlos.martinez@example.com</Text>
-              <Text style={styles.cardRole}>Rol: Moderador</Text>
-            </View>
-          </View>
-        </View>
+        )}
       </ScrollView>
 
-      {/* Footer con botones */}
+      {/* Footer */}
       <View style={styles.footer}>
         <TouchableOpacity
           style={styles.footerButton}
           onPress={() => navigation.navigate('Home')}
-        >
+        >r
           <Ionicons name="document-text" size={30} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.footerButton}
-          onPress={() => navigation.navigate('Users')} 
+          onPress={() => navigation.navigate('Users')}
         >
           <Ionicons name="people" size={30} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.footerButton}
-          onPress={() => navigation.navigate('Login')} 
+          onPress={() => navigation.navigate('Login')}
         >
           <Ionicons name="log-out" size={30} color="#000" />
         </TouchableOpacity>
@@ -83,7 +90,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#d2ebf3",
-    justifyContent: "space-between", // Esto empuja el footer al fondo
+    justifyContent: "space-between",
   },
   scrollContent: {
     flexGrow: 1,
@@ -92,11 +99,6 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 130,
     backgroundColor: "#ebeef3",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 5,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -110,52 +112,45 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   card: {
-    flexDirection: "row", // Para poner el avatar y el contenido en fila
+    flexDirection: "row",
     backgroundColor: "#fff",
     padding: 16,
     marginBottom: 16,
     borderRadius: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
     alignItems: "center",
   },
   avatarContainer: {
-    marginRight: 16, 
+    marginRight: 16,
   },
   cardContent: {
-    flex: 1, 
+    flex: 1,
   },
   cardName: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 4,
   },
   cardEmail: {
     fontSize: 14,
     color: "#555",
-    marginBottom: 4,
   },
   cardRole: {
     fontSize: 14,
     color: "#888",
+  },
+  noUsersText: {
+    textAlign: "center",
+    fontSize: 16,
+    color: "#555",
+    marginTop: 20,
   },
   footer: {
     flexDirection: "row",
     justifyContent: "space-around",
     paddingVertical: 10,
     backgroundColor: "#ebeef3",
-    borderTopWidth: 1,
-    borderTopColor: "#ddd",
   },
   footerButton: {
     paddingVertical: 10,
-  },
-  footerButtonText: {
-    fontSize: 14,
-    fontWeight: "bold",
   },
 });
 
