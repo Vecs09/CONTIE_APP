@@ -1,15 +1,33 @@
-import React from "react";
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from "react-native";
-import { useNavigation } from "@react-navigation/native"; // Importamos el hook de navegación
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from '@expo/vector-icons';
+import { getArticles } from "../services/api.services"; // Asegúrate de crear esta función en tu archivo de servicios
 
 const HomeScreen = () => {
-  const navigation = useNavigation(); // Usamos el hook para obtener la función de navegación
+  const navigation = useNavigation();
+  const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        const response = await getArticles(); // Función para obtener los datos de la API
+        setArticles(response.data);
+      } catch (error) {
+        console.error("Error fetching articles:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchArticles();
+  }, []);
 
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Cabecera con color y sombra */}
+        {/* Cabecera */}
         <View style={styles.header}>
           <Image
             source={require("../assets/contie2024F1.png")}
@@ -17,45 +35,45 @@ const HomeScreen = () => {
           />
         </View>
 
-        {/* Contenido con tarjetas */}
+        {/* Contenido */}
         <View style={styles.cardsContainer}>
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>Nombre del Artículo</Text>
-            <Text style={styles.cardDate}>Fecha de Publicación: 05/12/2024</Text>
-            <Text style={styles.cardContent}>
-              Este es el contenido del artículo. Aquí puedes colocar más detalles.
-            </Text>
-          </View>
-
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>Otro Artículo</Text>
-            <Text style={styles.cardDate}>Fecha de Publicación: 04/12/2024</Text>
-            <Text style={styles.cardContent}>
-              Este es otro artículo con su contenido respectivo.
-            </Text>
-          </View>
+          {loading ? (
+            <ActivityIndicator size="large" color="#4A90E2" style={{ marginTop: 20 }} />
+          ) : (
+            articles.length > 0 ? (
+              articles.map((article) => (
+                <View key={article.id} style={styles.card}>
+                  <Text style={styles.cardTitle}>{article.title}</Text>
+                  <Text style={styles.cardDate}>Fecha de Publicación: {new Date(article.publication_date).toLocaleDateString()}</Text>
+                  <Text style={styles.cardContent}>{article.content}</Text>
+                </View>
+              ))
+            ) : (
+              <Text style={styles.noArticlesText}>No hay artículos disponibles.</Text>
+            )
+          )}
         </View>
       </ScrollView>
 
-      {/* Footer con botones */}
+      {/* Footer */}
       <View style={styles.footer}>
         <TouchableOpacity
           style={styles.footerButton}
-          onPress={() => navigation.navigate('Home')} // Redirige a la pantalla de Artículos
+          onPress={() => navigation.navigate('Home')}
         >
-          <Ionicons name="document-text" size={30} color={"#000"}/>
+          <Ionicons name="document-text" size={30} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.footerButton}
-          onPress={() => navigation.navigate('Users')} // Redirige a la pantalla de Usuarios
+          onPress={() => navigation.navigate('Users')}
         >
-          <Ionicons name="people" size={30} color={"#000"} />
+          <Ionicons name="people" size={30} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.footerButton}
-          onPress={() => navigation.navigate('Login')} // Redirige a la pantalla de Login
+          onPress={() => navigation.navigate('Login')}
         >
-          <Ionicons name="log-out" size={30} color={"#000"} />
+          <Ionicons name="log-out" size={30} color="#000" />
         </TouchableOpacity>
       </View>
     </View>
@@ -66,20 +84,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#d2ebf3",
-    justifyContent: "space-between", // Esto empuja el footer al fondo
+    justifyContent: "space-between",
   },
   scrollContent: {
-    flexGrow: 1, // Permite que el ScrollView ocupe el espacio disponible
+    flexGrow: 1,
   },
   header: {
     width: "100%",
     height: 130,
     backgroundColor: "#ebeef3",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 5,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -117,6 +130,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#333",
   },
+  noArticlesText: {
+    textAlign: "center",
+    fontSize: 16,
+    color: "#555",
+    marginTop: 20,
+  },
   footer: {
     flexDirection: "row",
     justifyContent: "space-around",
@@ -127,10 +146,6 @@ const styles = StyleSheet.create({
   },
   footerButton: {
     paddingVertical: 10,
-  },
-  footerButtonText: {
-    fontSize: 14,
-    fontWeight: "bold",
   },
 });
 

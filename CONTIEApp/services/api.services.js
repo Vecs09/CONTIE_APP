@@ -13,3 +13,8 @@ export const getUsers = async () => {
     const response = await apiServices.get("users");
     return response.data;
 }
+
+export const getArticles = async () => {
+    const response = await apiServices.get("articles");
+    return response.data;
+}
