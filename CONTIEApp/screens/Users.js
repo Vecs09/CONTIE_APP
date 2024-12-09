@@ -66,7 +66,7 @@ const UserScreen = () => {
         <TouchableOpacity
           style={styles.footerButton}
           onPress={() => navigation.navigate('Home')}
-        >r
+        >
           <Ionicons name="document-text" size={30} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity
